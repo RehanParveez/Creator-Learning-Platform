@@ -48,7 +48,7 @@ class Subscription(models.Model):
     
 class Coupon(models.Model):
     code = models.CharField(max_length=55, unique=True)
-    discount = models.IntegerField()
+    discount = models.PositiveIntegerField()
     valid_from = models.DateTimeField()
     valid_until = models.DateTimeField()
     is_active = models.BooleanField(default=True)

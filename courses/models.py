@@ -65,8 +65,7 @@ class Enrollment(models.Model):
     is_completed = models.BooleanField(default=False)
     
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields = ['user', 'course'], name = 'unique_enrollment')] 
+        constraints = [models.UniqueConstraint(fields = ['user', 'course'], name = 'unique_enrollment')] 
         
     def __str__(self):
         return self.enrolled_at
