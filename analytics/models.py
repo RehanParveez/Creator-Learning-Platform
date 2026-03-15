@@ -23,4 +23,4 @@ class RevenueReport(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.creator}: {self.month}/{self.year}'
+        return f'{self.creators}: {self.month}/{self.year}'

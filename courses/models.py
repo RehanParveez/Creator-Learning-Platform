@@ -56,7 +56,7 @@ class LessonActivity(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return self.created_at
+        return str(self.created_at)
     
 class Enrollment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'enrollments')
@@ -68,7 +68,7 @@ class Enrollment(models.Model):
         constraints = [models.UniqueConstraint(fields = ['user', 'course'], name = 'unique_enrollment')] 
         
     def __str__(self):
-        return self.enrolled_at
+        return str(self.enrolled_at)
     
 class LessonProgress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -80,7 +80,7 @@ class LessonProgress(models.Model):
         constraints = [models.UniqueConstraint(fields = ['user', 'lesson'], name = 'unique_progress')]
     
     def __str__(self):
-        return self.completed_at
+        return str(self.completed_at)
         
 class Certificate(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -88,6 +88,6 @@ class Certificate(models.Model):
     given_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return self.given_at
+        return str(self.given_at)
     
     
