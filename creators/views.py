@@ -9,3 +9,13 @@ class CreatorsViewset(viewsets.ModelViewSet):
     serializer_class = CreatorProfileSerializer
     queryset = CreatorProfile.objects.all()
     permission_classes = [CreatorPermission]
+    
+    def get_queryset(self):
+      user = self.request.user
+
+      if user.control == 'platformadmin':
+        return self.queryset
+      if user.control == 'creator':
+        return self.queryset.filter(user=user)
+
+      return self.queryset
