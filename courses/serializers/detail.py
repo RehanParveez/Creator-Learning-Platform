@@ -1,11 +1,12 @@
 from rest_framework import serializers
 from courses.models import Course, Section, Lesson, LessonActivity, Enrollment, LessonProgress, Certificate
-from accounts.serializers.basic import UserSerializer1
+from creators.serializers.basic import CreatorProfileSerializer1
 from courses.serializers.basic import SectionSerializer1, CourseSerializer1, LessonSerializer1, LessonActivitySerializer1
 from engagement.serializers.basic import CommentSerializer1
+from accounts.serializers.basic import UserSerializer1
 
 class CourseSerializer(serializers.ModelSerializer):
-    creator = UserSerializer1(read_only=True)
+    creator = CreatorProfileSerializer1(read_only=True)
     sections = SectionSerializer1(many=True, read_only=True)
     class Meta:
         model = Course
@@ -24,7 +25,7 @@ class LessonSerializer(serializers.ModelSerializer):
     comments = CommentSerializer1(many=True, read_only=True)
     class Meta:
         model = Lesson
-        fields = ['section', 'title', 'description', 'activities', 'video_url', 'duration', 'is_preview', 'order', 'created_at']
+        fields = ['section', 'title', 'description', 'activities', 'comments', 'video_url', 'duration', 'is_preview', 'order', 'created_at']
             
 class LessonActivitySerializer(serializers.ModelSerializer):
     lesson = LessonSerializer1(read_only=True)

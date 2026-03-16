@@ -1,11 +1,12 @@
 from rest_framework import serializers
 from subscriptions.models import Product, Plan, Subscription, Coupon
+from creators.serializers.basic import CreatorProfileSerializer1
 from accounts.serializers.basic import UserSerializer1
 from subscriptions.serializers.basic import PlanSerializer1
 from subscriptions.serializers.basic import ProductSerializer1
    
 class ProductSerializer(serializers.ModelSerializer):
-    creator = UserSerializer1(read_only=True)
+    creator = CreatorProfileSerializer1(read_only=True)
     plans = PlanSerializer1(many=True)
     class Meta:
         model = Product

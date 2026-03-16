@@ -12,4 +12,4 @@ class RevenueSerializer(serializers.ModelSerializer):
     creator = CreatorProfileSerializer1(read_only=True)
     class Meta:
         model = RevenueReport
-        fields = ['creators', 'month', 'year', 'total_revenue', 'total_subscriptions', 'created_at']
+        fields = ['creator', 'month', 'year', 'total_revenue', 'total_subscriptions', 'created_at']
