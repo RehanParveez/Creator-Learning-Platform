@@ -3,6 +3,8 @@ from rest_framework import viewsets
 from subscriptions.serializers.detail import ProductSerializer, PlanSerializer, SubscriptionSerializer, CouponSerializer
 from subscriptions.models import Product, Plan, Subscription, Coupon
 from accounts.permissions import CreatorPermission, SubscriberPermission, PlatformAdminPermission
+from subscriptions.services import create_sub
+from rest_framework.response import Response
 
 # Create your views here.
 class ProductViewset(viewsets.ModelViewSet):
@@ -51,6 +53,14 @@ class SubscriptionViewset(viewsets.ModelViewSet):
         return self.queryset.filter(plan__product__creator__user=user)
 
       return self.queryset.none()
+    
+    def create(self, request):
+      plan_id = request.data.get('plan_id')
+      pay_method_id = request.data.get('pay_method_id')
+      
+      subscription = create_sub(user=request.user, plan_id=plan_id, pay_method_id=pay_method_id)
+      serializer = self.get_serializer(subscription)
+      return Response(serializer.data, status=201)
     
 class CouponViewset(viewsets.ModelViewSet):
     serializer_class = CouponSerializer

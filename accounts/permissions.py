@@ -24,7 +24,7 @@ class CreatorPermission(BasePermission):
 
         if user.control == 'platformadmin':
             return True
-        return obj.creator.user == user
+        return obj.product.creator.user == user
 
 class SubscriberPermission(BasePermission):
   def has_permission(self, request, view):

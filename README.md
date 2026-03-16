@@ -7,3 +7,16 @@
 . Redis
 . Celery
 . JWT Authentication
+
+
+## Use of subscription billing logic:
+
+. The subscription billing logic is added in the subscriptions apps file named service file of this project and then this service file method made with the use of transaction.atomic decorator is used in the SubscriptionViewset.
+
+ - Now it works in a manner like when a subscriber sends a POST method request with the plan_id and the pay_method_id, then in this case first the service will get/fetch the plan and alongside it the payment method owned by the subscribers
+ 
+ . Then after this it will create a subscription for the user by calculating the start and the expiry dates and also this is based on the plan type like whether its a monthly or a yearly plan.
+ 
+ - Further then after all of this a invoice and the invoice item are going to be created automatically, and also a payment is going to be recorded as a success.
+ 
+  - And in the end the status of invoice is going to be updated to paid, then the viewset will call this service method, also the logic of subscription is going to be serialized and then it will simply eturn a response. So the use of this full subscription billing logic makes sure that the subscribers can only use their own payment methods and also all the data which is created is safely handled inside a single transaction.
