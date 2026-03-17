@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import User
 from creators.models import CreatorProfile
+from subscriptions.models import Product
 
 # Create your models here.
 class Course(models.Model):
@@ -10,6 +11,7 @@ class Course(models.Model):
         ('advanced', 'Advanced'),
     )
     creator = models.ForeignKey(CreatorProfile, on_delete=models.CASCADE, related_name='created_courses')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
     title = models.CharField(max_length=55)
     description = models.TextField()
     cover = models.ImageField(upload_to = 'course_cover/')

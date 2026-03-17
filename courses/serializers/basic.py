@@ -9,7 +9,7 @@ class SectionSerializer1(serializers.ModelSerializer):
 class CourseSerializer1(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['title', 'description', 'price', 'level', 'language']
+        fields = ['title', 'product', 'description', 'price', 'level', 'language']
         
 class LessonSerializer1(serializers.ModelSerializer):
     class Meta:

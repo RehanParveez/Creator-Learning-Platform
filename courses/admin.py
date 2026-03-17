@@ -4,7 +4,7 @@ from courses.models import Course, Section, Lesson, LessonActivity, Enrollment, 
 # Register your models here.
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['creator', 'title', 'description', 'cover', 'price', 'level', 'is_premium', 'is_published', 'language', 'lessons', 'students', 'created_at', 'updated_at']
+    list_display = ['creator', 'title', 'product', 'description', 'cover', 'price', 'level', 'is_premium', 'is_published', 'language', 'lessons', 'students', 'created_at', 'updated_at']
     
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):

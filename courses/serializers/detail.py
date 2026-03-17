@@ -10,7 +10,7 @@ class CourseSerializer(serializers.ModelSerializer):
     sections = SectionSerializer1(many=True, read_only=True)
     class Meta:
         model = Course
-        fields = ['creator', 'title', 'description', 'cover', 'price', 'level', 'sections', 'is_premium', 'is_published', 'language', 'lessons', 'students', 'created_at', 'updated_at']
+        fields = ['creator', 'title', 'product', 'description', 'cover', 'price', 'level', 'sections', 'is_premium', 'is_published', 'language', 'lessons', 'students', 'created_at', 'updated_at']
           
 class SectionSerializer(serializers.ModelSerializer):
     course = CourseSerializer1(read_only=True)
