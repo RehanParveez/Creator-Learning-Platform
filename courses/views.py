@@ -3,12 +3,23 @@ from rest_framework import viewsets
 from courses.serializers.detail import CourseSerializer, SectionSerializer, LessonSerializer, LessonActivitySerializer, EnrollmentSerializer, LessonProgressSerializer, CertificateSerializer
 from courses.models import Course, Section, Lesson, LessonActivity, Enrollment, LessonProgress, Certificate
 from accounts.permissions import CreatorPermission, SubscriberPermission
+from rest_framework.decorators import action
+from courses.services import comp_lesson
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 # Create your views here.
 class CourseViewset(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
     permission_classes = [CreatorPermission]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    # filtering fields
+    search_fields = ['title', 'price']
+    ordering_fields = ['created_at']
+    filterset_fields = ['title', 'students', 'updated_at', 'created_at']
     
     def get_queryset(self):
       user = self.request.user
@@ -24,6 +35,12 @@ class SectionViewset(viewsets.ModelViewSet):
     serializer_class = SectionSerializer
     queryset = Section.objects.all()
     permission_classes = [CreatorPermission]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    # filtering fields
+    search_fields = ['title', 'description']
+    ordering_fields = ['created_at']
+    filterset_fields = ['title', 'order', 'created_at']
     
     def get_queryset(self):
       user = self.request.user
@@ -39,6 +56,12 @@ class LessonViewset(viewsets.ModelViewSet):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [CreatorPermission]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    # filtering fields
+    search_fields = ['title', 'description']
+    ordering_fields = ['created_at']
+    filterset_fields = ['title', 'is_preview', 'order', 'created_at']
     
     def get_queryset(self):
       user = self.request.user
@@ -54,6 +77,12 @@ class LessonActivityViewset(viewsets.ModelViewSet):
     serializer_class = LessonActivitySerializer
     queryset = LessonActivity.objects.all()
     permission_classes = [CreatorPermission]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    # filtering fields
+    search_fields = ['created_at']
+    ordering_fields = ['created_at']
+    filterset_fields = ['created_at']
     
     def get_queryset(self):
       user = self.request.user
@@ -69,6 +98,12 @@ class EnrollmentViewset(viewsets.ModelViewSet):
     serializer_class = EnrollmentSerializer
     queryset = Enrollment.objects.all()
     permission_classes = [SubscriberPermission]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    # filtering fields
+    search_fields = ['enrolled_at']
+    ordering_fields = ['enrolled_at']
+    filterset_fields = ['is_completed', 'enrolled_at']
     
     def get_queryset(self):
       user = self.request.user
@@ -81,11 +116,17 @@ class EnrollmentViewset(viewsets.ModelViewSet):
         return self.queryset.filter(course__creator__user=user)
 
       return self.queryset.none()
-    
+   
 class LessonProgressViewset(viewsets.ModelViewSet):
     serializer_class = LessonProgressSerializer
     queryset = LessonProgress.objects.all()
     permission_classes = [SubscriberPermission]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    # filtering fields
+    search_fields = ['is_completed']
+    ordering_fields = ['completed_at']
+    filterset_fields = ['completed_at', 'is_completed']
     
     def get_queryset(self):
       user = self.request.user
@@ -97,10 +138,22 @@ class LessonProgressViewset(viewsets.ModelViewSet):
 
       return self.queryset.none()
     
+    @action(detail=False, methods=['post'])
+    def complete_action(self, request):
+        lesson_id = request.data.get('lesson_id')
+        res = comp_lesson(user=request.user, lesson_id=lesson_id)
+        return Response(res, status=200)
+    
 class CertificateViewset(viewsets.ModelViewSet):
     serializer_class = CertificateSerializer
     queryset = Certificate.objects.all()
     permission_classes = [SubscriberPermission]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    # filtering fields
+    search_fields = ['given_at']
+    ordering_fields = ['given_at']
+    filterset_fields = ['given_at']
     
     def get_queryset(self):
       user = self.request.user

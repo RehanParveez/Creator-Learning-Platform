@@ -5,12 +5,20 @@ from subscriptions.models import Product, Plan, Subscription, Coupon
 from accounts.permissions import CreatorPermission, SubscriberPermission, PlatformAdminPermission
 from subscriptions.services import create_sub
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 # Create your views here.
 class ProductViewset(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     permission_classes = [CreatorPermission]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    # filtering fields
+    search_fields = ['name', 'description']
+    ordering_fields = ['created_at']
+    filterset_fields = ['name', 'is_active', 'created_at']
     
     def get_queryset(self):
       user = self.request.user
@@ -26,6 +34,12 @@ class PlanViewset(viewsets.ModelViewSet):
     serializer_class = PlanSerializer
     queryset = Plan.objects.all()
     permission_classes = [CreatorPermission]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    # filtering fields
+    search_fields = ['name', 'price']
+    ordering_fields = ['created_at']
+    filterset_fields = ['billing', 'trial', 'is_active', 'created_at']
     
     def get_queryset(self):
       user = self.request.user
@@ -41,6 +55,12 @@ class SubscriptionViewset(viewsets.ModelViewSet):
     serializer_class = SubscriptionSerializer
     queryset = Subscription.objects.all()
     permission_classes = [SubscriberPermission]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    # filtering fields
+    search_fields = ['status']
+    ordering_fields = ['created_at']
+    filterset_fields = ['status', 'started_at', 'canceled_at', 'created_at']
     
     def get_queryset(self):
       user = self.request.user
@@ -66,6 +86,12 @@ class CouponViewset(viewsets.ModelViewSet):
     serializer_class = CouponSerializer
     queryset = Coupon.objects.all()
     permission_classes = [PlatformAdminPermission]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    
+    # filtering fields
+    search_fields = ['discount']
+    ordering_fields = ['valid_from']
+    filterset_fields = ['valid_from', 'valid_until', 'is_active']
     
     def get_queryset(self):
       user = self.request.user
