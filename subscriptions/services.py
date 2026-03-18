@@ -3,6 +3,7 @@ from subscriptions.models import Plan, Subscription
 from django.utils import timezone
 from billing.models import Invoice, InvoiceItem, PaymentMethod, Payment
 from datetime import timedelta
+from engagement.models import Activity
 
 @transaction.atomic
 def create_sub(user, plan_id, pay_method_id):
@@ -25,5 +26,6 @@ def create_sub(user, plan_id, pay_method_id):
   invoice.paid_at = now
   invoice.save()
   
+  Activity.objects.create(user=user, work=f'subscription {plan.name}')
   return subscription
   

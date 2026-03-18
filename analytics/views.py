@@ -5,6 +5,12 @@ from analytics.models import CreatorAnalytics, RevenueReport
 from accounts.permissions import CreatorPermission, PlatformAdminPermission
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from rest_framework.decorators import action
+from subscriptions.models import Subscription
+from django.db.models import Count
+from courses.models import Course, LessonProgress
+from rest_framework.response import Response
+from django.db.models import Sum
 
 # Create your views here.
 class AnalyticsViewset(viewsets.ModelViewSet):
@@ -25,6 +31,38 @@ class AnalyticsViewset(viewsets.ModelViewSet):
         return self.queryset.filter(creator__user=user)
       return self.queryset
     
+    @action(detail=False, methods=['get'])
+    def subscrib_inc(self, request):
+      user = request.user
+
+      subscriptions = Subscription.objects.all()
+      if user.control == 'creator':
+        subscriptions = subscriptions.filter(plan__product__creator__user=user)
+      res = subscriptions.values('started_at__year', 'started_at__month').annotate(total=Count('id')).order_by('started_at__year', 'started_at__month')
+      return Response(res)
+    
+    @action(detail=False, methods=['get'])
+    def course_comple(self, request):
+      user = request.user
+      courses = Course.objects.all()
+      if user.control == 'creator':
+        courses = courses.filter(product__creator__user=user)
+
+      res = []
+      for course in courses:
+        total_lessons = course.sections.aggregate(total=Count('lessons'))['total']
+        if total_lessons is None:
+          total_lessons = 0
+          
+        completed = LessonProgress.objects.filter(lesson__section__course=course, is_completed=True)
+        completed=completed.count()
+        if total_lessons == 0:
+          percentage = 0
+        else:
+          percentage = (completed / total_lessons) * 100
+        res.append({'course': course.title, 'completion_rate': round(percentage, 2)})
+      return Response(res)
+    
 class RevenueViewset(viewsets.ModelViewSet):
     serializer_class = RevenueSerializer
     queryset = RevenueReport.objects.all()
@@ -42,3 +80,14 @@ class RevenueViewset(viewsets.ModelViewSet):
       if user.control == 'creator':
         return self.queryset.filter(creators__user=user)
       return self.queryset
+    
+    @action(detail=False, methods=['get'])
+    def creator_report(self, request):
+      user = request.user
+      queryset = self.get_queryset()
+
+      if user.control == 'creator':
+        queryset = queryset.filter(creators__user=user)
+      res = queryset.values('month', 'year').annotate(total_revenue=Sum('total_revenue'), total_subscriptions=Sum('total_subscriptions')).order_by('year', 'month')
+      return Response(res)
+    

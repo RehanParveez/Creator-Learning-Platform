@@ -13,7 +13,7 @@ def monthly_report():
   now = timezone.now()
   
   if now.month == 1:
-    month == 12
+    month = 12
     year = now.year - 1
   else:
     month = now.month - 1
