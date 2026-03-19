@@ -4,6 +4,7 @@ from django.utils import timezone
 from billing.models import Invoice, InvoiceItem, PaymentMethod, Payment
 from datetime import timedelta
 from engagement.models import Activity
+from django.core.cache import cache
 
 @transaction.atomic
 def create_sub(user, plan_id, pay_method_id):
@@ -27,5 +28,9 @@ def create_sub(user, plan_id, pay_method_id):
   invoice.save()
   
   Activity.objects.create(user=user, work=f'subscription {plan.name}')
+  cache.delete(f'sub_inc{user.id}')
+  creator = plan.product.creator.user
+  cache.delete(f'creator_report{creator.id}')
+  cache.delete(f'creator_dash{creator.id}')
   return subscription
   

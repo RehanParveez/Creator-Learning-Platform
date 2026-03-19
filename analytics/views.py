@@ -11,6 +11,7 @@ from django.db.models import Count
 from courses.models import Course, LessonProgress
 from rest_framework.response import Response
 from django.db.models import Sum
+from django.core.cache import cache
 
 # Create your views here.
 class AnalyticsViewset(viewsets.ModelViewSet):
@@ -31,19 +32,41 @@ class AnalyticsViewset(viewsets.ModelViewSet):
         return self.queryset.filter(creator__user=user)
       return self.queryset
     
+    def list(self, request, *args, **kwargs):
+     user = request.user
+     cache_key = f'creator_dash{user.id}'
+     clear = cache.get(cache_key)
+     if not clear:
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        clear = serializer.data
+        cache.set(cache_key, data, timeout=60 * 4)
+     return Response(clear)
+    
     @action(detail=False, methods=['get'])
     def subscrib_inc(self, request):
       user = request.user
+      cache_key = f'sub_inc{user.id}'
+      clear = cache.get(cache_key)
+      if clear:
+        return Response(clear)
 
       subscriptions = Subscription.objects.all()
       if user.control == 'creator':
         subscriptions = subscriptions.filter(plan__product__creator__user=user)
       res = subscriptions.values('started_at__year', 'started_at__month').annotate(total=Count('id')).order_by('started_at__year', 'started_at__month')
-      return Response(res)
+      clear = list(res)
+      cache.set(cache_key, clear, timeout=60 * 2)
+      return Response(clear)
     
     @action(detail=False, methods=['get'])
     def course_comple(self, request):
       user = request.user
+      cache_key = f'comp{user.id}'
+      clear = cache.get(cache_key)
+      if clear:
+        return Response(clear)
+      
       courses = Course.objects.all()
       if user.control == 'creator':
         courses = courses.filter(product__creator__user=user)
@@ -61,6 +84,7 @@ class AnalyticsViewset(viewsets.ModelViewSet):
         else:
           percentage = (completed / total_lessons) * 100
         res.append({'course': course.title, 'completion_rate': round(percentage, 2)})
+      cache.set(cache_key, res, timeout=60 * 2)
       return Response(res)
     
 class RevenueViewset(viewsets.ModelViewSet):
@@ -84,10 +108,16 @@ class RevenueViewset(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def creator_report(self, request):
       user = request.user
+      cache_key = f'creator_report{user.id}'
+      clear = cache.get(cache_key)
+      if clear:
+        return Response(clear)
       queryset = self.get_queryset()
 
       if user.control == 'creator':
         queryset = queryset.filter(creators__user=user)
       res = queryset.values('month', 'year').annotate(total_revenue=Sum('total_revenue'), total_subscriptions=Sum('total_subscriptions')).order_by('year', 'month')
-      return Response(res)
+      clear = list(res)
+      cache.set(cache_key, clear, timeout=60 * 6)
+      return Response(clear)
     

@@ -1,6 +1,7 @@
 from courses.models import Lesson, LessonProgress
 from django.utils import timezone
 from engagement.models import Activity
+from django.core.cache import cache
 
 def comp_lesson(user, lesson_id):
   lesson = Lesson.objects.get(id=lesson_id)
@@ -21,5 +22,7 @@ def comp_lesson(user, lesson_id):
       percentage = (comp_lessons / tot_lessons) * 100
   
   Activity.objects.create(user=user, work=f'comp lesson {lesson.title}')
+  cache.delete(f'comp{user.id}')
+  cache.delete(f'creator_dash{user.id}')
   return {'comp_lesson':True, 'course_prog': round(percentage, 2)}
   
