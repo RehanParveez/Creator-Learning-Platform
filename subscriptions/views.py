@@ -11,7 +11,7 @@ from rest_framework import filters
 # Create your views here.
 class ProductViewset(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by('id')
     permission_classes = [CreatorPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -32,7 +32,7 @@ class ProductViewset(viewsets.ModelViewSet):
 
 class PlanViewset(viewsets.ModelViewSet):
     serializer_class = PlanSerializer
-    queryset = Plan.objects.all()
+    queryset = Plan.objects.all().order_by('id')
     permission_classes = [CreatorPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -53,7 +53,7 @@ class PlanViewset(viewsets.ModelViewSet):
     
 class SubscriptionViewset(viewsets.ModelViewSet):
     serializer_class = SubscriptionSerializer
-    queryset = Subscription.objects.all()
+    queryset = Subscription.objects.all().order_by('id')
     permission_classes = [SubscriberPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -84,7 +84,7 @@ class SubscriptionViewset(viewsets.ModelViewSet):
     
 class CouponViewset(viewsets.ModelViewSet):
     serializer_class = CouponSerializer
-    queryset = Coupon.objects.all()
+    queryset = Coupon.objects.all().order_by('id')
     permission_classes = [PlatformAdminPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     

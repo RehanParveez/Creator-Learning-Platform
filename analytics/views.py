@@ -16,7 +16,7 @@ from django.core.cache import cache
 # Create your views here.
 class AnalyticsViewset(viewsets.ModelViewSet):
     serializer_class = AnalyticsSerializer
-    queryset = CreatorAnalytics.objects.all()
+    queryset = CreatorAnalytics.objects.all().order_by('id')
     permission_classes = [CreatorPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -40,7 +40,7 @@ class AnalyticsViewset(viewsets.ModelViewSet):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         clear = serializer.data
-        cache.set(cache_key, data, timeout=60 * 4)
+        cache.set(cache_key, clear, timeout=60 * 4)
      return Response(clear)
     
     @action(detail=False, methods=['get'])
@@ -89,7 +89,7 @@ class AnalyticsViewset(viewsets.ModelViewSet):
     
 class RevenueViewset(viewsets.ModelViewSet):
     serializer_class = RevenueSerializer
-    queryset = RevenueReport.objects.all()
+    queryset = RevenueReport.objects.all().order_by('id')
     permission_classes = [PlatformAdminPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     

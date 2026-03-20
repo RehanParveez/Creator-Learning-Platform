@@ -9,7 +9,7 @@ from rest_framework import filters
 # Create your views here.
 class NotificationsViewset(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
-    queryset = Notification.objects.all()
+    queryset = Notification.objects.all().order_by('id')
     permission_classes = [SubscriberPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     

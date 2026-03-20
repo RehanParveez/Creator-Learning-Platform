@@ -8,11 +8,12 @@ from courses.services import comp_lesson
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 class CourseViewset(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
-    queryset = Course.objects.all()
+    queryset = Course.objects.all().order_by('id')
     permission_classes = [CreatorPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -33,7 +34,7 @@ class CourseViewset(viewsets.ModelViewSet):
     
 class SectionViewset(viewsets.ModelViewSet):
     serializer_class = SectionSerializer
-    queryset = Section.objects.all()
+    queryset = Section.objects.all().order_by('id')
     permission_classes = [CreatorPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -54,7 +55,7 @@ class SectionViewset(viewsets.ModelViewSet):
     
 class LessonViewset(viewsets.ModelViewSet):
     serializer_class = LessonSerializer
-    queryset = Lesson.objects.all()
+    queryset = Lesson.objects.all().order_by('id')
     permission_classes = [CreatorPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -75,7 +76,7 @@ class LessonViewset(viewsets.ModelViewSet):
     
 class LessonActivityViewset(viewsets.ModelViewSet):
     serializer_class = LessonActivitySerializer
-    queryset = LessonActivity.objects.all()
+    queryset = LessonActivity.objects.all().order_by('id')
     permission_classes = [CreatorPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -96,7 +97,7 @@ class LessonActivityViewset(viewsets.ModelViewSet):
     
 class EnrollmentViewset(viewsets.ModelViewSet):
     serializer_class = EnrollmentSerializer
-    queryset = Enrollment.objects.all()
+    queryset = Enrollment.objects.all().order_by('id')
     permission_classes = [SubscriberPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -119,7 +120,7 @@ class EnrollmentViewset(viewsets.ModelViewSet):
    
 class LessonProgressViewset(viewsets.ModelViewSet):
     serializer_class = LessonProgressSerializer
-    queryset = LessonProgress.objects.all()
+    queryset = LessonProgress.objects.all().order_by('id')
     permission_classes = [SubscriberPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -141,12 +142,13 @@ class LessonProgressViewset(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'])
     def complete_action(self, request):
         lesson_id = request.data.get('lesson_id')
-        res = comp_lesson(user=request.user, lesson_id=lesson_id)
+        lesson = get_object_or_404(Lesson, id=lesson_id)
+        res = comp_lesson(user=request.user, lesson=lesson)
         return Response(res, status=200)
     
 class CertificateViewset(viewsets.ModelViewSet):
     serializer_class = CertificateSerializer
-    queryset = Certificate.objects.all()
+    queryset = Certificate.objects.all().order_by('id')
     permission_classes = [SubscriberPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     

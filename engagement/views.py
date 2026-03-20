@@ -9,7 +9,7 @@ from rest_framework import filters
 # Create your views here.
 class CommentViewset(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    queryset = Comment.objects.all()
+    queryset = Comment.objects.all().order_by('id')
     permission_classes = [SubscriberPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -32,7 +32,7 @@ class CommentViewset(viewsets.ModelViewSet):
     
 class LikeViewset(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
-    queryset = Like.objects.all()
+    queryset = Like.objects.all().order_by('id')
     permission_classes = [SubscriberPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -55,7 +55,7 @@ class LikeViewset(viewsets.ModelViewSet):
     
 class ActivityViewset(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
-    queryset = Activity.objects.all()
+    queryset = Activity.objects.all().order_by('id')
     permission_classes = [PlatformAdminPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     

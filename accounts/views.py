@@ -12,7 +12,7 @@ from rest_framework import filters
 # Create your views here.
 class UserViewset(viewsets.ModelViewSet):
     serializer_class = UserSerializer
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by('id')
     permission_classes = [PlatformAdminPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -29,7 +29,7 @@ class UserViewset(viewsets.ModelViewSet):
 
 class FollowerViewset(viewsets.ModelViewSet):
     serializer_class = FollowerSerializer
-    queryset = Follower.objects.all()
+    queryset = Follower.objects.all().order_by('id')
     permission_classes = [SubscriberPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     

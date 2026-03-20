@@ -42,6 +42,7 @@ class SubscriberPermission(BasePermission):
       if user.control == 'platformadmin':
           return True
       return user.control == 'subscriber'
+  
 
 
 

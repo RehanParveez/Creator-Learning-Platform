@@ -9,7 +9,7 @@ from rest_framework import filters
 # Create your views here.
 class CreatorsViewset(viewsets.ModelViewSet):
     serializer_class = CreatorProfileSerializer
-    queryset = CreatorProfile.objects.all()
+    queryset = CreatorProfile.objects.all().order_by('id')
     permission_classes = [CreatorPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     

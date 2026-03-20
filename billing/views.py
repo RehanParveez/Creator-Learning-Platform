@@ -9,7 +9,7 @@ from rest_framework import filters
 # Create your views here.
 class InvoiceViewset(viewsets.ModelViewSet):
     serializer_class = InvoiceSerializer
-    queryset = Invoice.objects.all()
+    queryset = Invoice.objects.all().order_by('id')
     permission_classes = [PlatformAdminPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -32,7 +32,7 @@ class InvoiceViewset(viewsets.ModelViewSet):
 
 class InvoiceItemViewset(viewsets.ModelViewSet):
     serializer_class = InvoiceItemSerializer
-    queryset = InvoiceItem.objects.all()
+    queryset = InvoiceItem.objects.all().order_by('id')
     permission_classes = [PlatformAdminPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -55,7 +55,7 @@ class InvoiceItemViewset(viewsets.ModelViewSet):
     
 class PaymentMethodViewset(viewsets.ModelViewSet):
     serializer_class = PaymentMethodSerializer
-    queryset = PaymentMethod.objects.all()
+    queryset = PaymentMethod.objects.all().order_by('id')
     permission_classes = [SubscriberPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
@@ -73,7 +73,7 @@ class PaymentMethodViewset(viewsets.ModelViewSet):
     
 class PaymentViewset(viewsets.ModelViewSet):
     serializer_class = PaymentSerializer
-    queryset = Payment.objects.all()
+    queryset = Payment.objects.all().order_by('id')
     permission_classes = [SubscriberPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
