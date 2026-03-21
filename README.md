@@ -28,3 +28,16 @@
 
  - Further it will also cal. the total num of lessons in the course alongside the num of comp lessons by that user.
 - Then after this the service function is called in the viewset and on doing this it returns the sttus of completion as well as the progress % of the updated course.
+
+
+## The Use of @patch in the testing of signals:
+The use of decorator @patch in the signal tests is mainly related to replacing the original functionality with the use of a mock version.
+
+- Now the signals related to lesson and subscription according to there functionality do the actions like creating the record of what happended & also whenever any event happens they send emails of the notification.
+
+. But the point here in tests is, the running of these actions is not required bcz they can somehow slow the process of testing.
+. Now for this with the use of @patch decorator, the real functions like notification_email.delay are replaced temporarily with a mock object which will record the process like if it was called but beyond this it does nothing else.
+
+. So thats why with the use of @patch decorator we can test the main logic part of the signals like in the lesson signal the test of like on adding a lesson whether an activity is being created/recorder or not,
+- And similarly for the signal of subscription signals the check of like on activating the subscription whether the activity is getting created/recorded or not.
+

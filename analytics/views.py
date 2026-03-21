@@ -12,6 +12,7 @@ from courses.models import Course, LessonProgress
 from rest_framework.response import Response
 from django.db.models import Sum
 from django.core.cache import cache
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 class AnalyticsViewset(viewsets.ModelViewSet):
@@ -98,13 +99,11 @@ class RevenueViewset(viewsets.ModelViewSet):
     ordering_fields = ['created_at']
     filterset_fields = ['month', 'year', 'created_at']
     
-    def get_queryset(self):
-      user = self.request.user
-      
-      if user.control == 'creator':
-        return self.queryset.filter(creators__user=user)
-      return self.queryset
-    
+    def get_permissions(self):
+      if self.action == 'creator_report':
+        return [IsAuthenticated()]
+      return super().get_permissions()
+     
     @action(detail=False, methods=['get'])
     def creator_report(self, request):
       user = request.user

@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 class CourseViewset(viewsets.ModelViewSet):
@@ -98,7 +99,7 @@ class LessonActivityViewset(viewsets.ModelViewSet):
 class EnrollmentViewset(viewsets.ModelViewSet):
     serializer_class = EnrollmentSerializer
     queryset = Enrollment.objects.all().order_by('id')
-    permission_classes = [SubscriberPermission]
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     
     # filtering fields

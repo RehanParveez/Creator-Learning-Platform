@@ -2,7 +2,8 @@ from accounts.tests import ParentTest
 from courses.models import CreatorProfile
 from subscriptions.models import Product
 from courses.models import Course
-from analytics.models import CreatorAnalytics
+from analytics.models import CreatorAnalytics, RevenueReport
+from django.core.cache import cache
 
 # Create your tests here.
 class AnalyticsViewsetTest(ParentTest):
@@ -29,3 +30,34 @@ class AnalyticsViewsetTest(ParentTest):
     res = self.client.get('/analytics/analytics/course_comple/')
     self.assertEqual(res.status_code, 200)
     self.assertIn('completion_rate', res.data[0])
+
+class RevenueViewsetTest(ParentTest):
+  def setUp(self):
+    super().setUp()
+    self.profile = CreatorProfile.objects.create(user=self.crea_user)
+    RevenueReport.objects.create(creators=self.profile, month=3, year=2026, total_revenue=100000, total_subscriptions=15)
+
+  def test_admin(self):
+    self.authenticate_user('platformadmin')
+    res = self.client.get('/analytics/revenue/')
+    self.assertEqual(res.status_code, 200)
+
+  def test_creator(self):
+    self.authenticate_user('creator')
+    res = self.client.get('/analytics/revenue/')
+    self.assertEqual(res.status_code, 403)
+
+  def test_repaction(self):
+    self.authenticate_user('creator')
+    res = self.client.get('/analytics/revenue/creator_report/')
+    self.assertEqual(res.status_code, 200)
+    self.assertTrue(len(res.data) > 0)
+
+  def test_creator_report(self):
+    self.authenticate_user('creator')
+    cache.clear() 
+    res1 = self.client.get('/analytics/revenue/creator_report/')
+    self.assertEqual(res1.status_code, 200)
+    res2 = self.client.get('/analytics/revenue/creator_report/')
+    self.assertEqual(res2.status_code, 200)
+    self.assertEqual(res1.data, res2.data)

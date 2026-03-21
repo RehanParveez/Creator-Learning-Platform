@@ -4,8 +4,11 @@ from subscriptions.models import Product, Plan, Subscription
 from billing.models import PaymentMethod
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from accounts.models import User
 from subscriptions.services import create_sub
+from unittest.mock import patch
+from django.utils import timezone
+from datetime import timedelta
+from engagement.models import Activity
 
 # Create your tests here.
 class SubscriptionViewsetTest(ParentTest):
@@ -37,4 +40,19 @@ class CreateSubServiceTest(TestCase):
     self.assertEqual(subscrip.user, self.user)
     self.assertEqual(subscrip.plan, self.plan)
 
+class SubscriptionSignalTest(TestCase):
+  def setUp(self):
+    User = get_user_model()
+    self.creator = User.objects.create_user(username='creator', email = 'creator@gmail.com')
+    self.subscriber = User.objects.create_user(username = 'subscriber', email = 'subscriber@gmail.com')
+    self.profile = CreatorProfile.objects.create(user=self.creator)
+    self.product = Product.objects.create(name = 'product1', creator=self.profile)
+    self.plan = Plan.objects.create(product=self.product, name = 'plan1', price=100, billing = 'monthly')
 
+  @patch('notifications.tasks.notification_email.delay')
+  def test_subscrip_signal(self, mock_email):
+    started_at = timezone.now()
+    expires_at = started_at + timedelta(days=30)
+    Subscription.objects.create(user=self.subscriber, plan=self.plan, started_at=started_at, expires_at=expires_at, status = 'active')
+    self.assertEqual(Activity.objects.count(), 1)
+    self.assertTrue(mock_email.called)

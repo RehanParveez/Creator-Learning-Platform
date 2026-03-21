@@ -43,6 +43,3 @@ class SubscriberPermission(BasePermission):
           return True
       return user.control == 'subscriber'
   
-
-
-
